@@ -8,13 +8,31 @@
 import SwiftUI
 
 struct SnackListView: View {
+    
+    @StateObject var viewModel = SnackListViewModel()
+    
     var body: some View {
-        NavigationView {
-            List(MockData.snacks) { snack in
-                SnackListCell(snack: snack)
+        ZStack {
+            NavigationView {
+                List(viewModel.snacks) { snack in
+                    SnackListCell(snack: snack)
+                }
+                .navigationTitle("Snacks")
             }
-            .navigationTitle("Snacks")
+            .onAppear {
+                viewModel.getSnacks()
+            }
+            .alert(item: $viewModel.alertItem) { alertItem in
+                Alert(title: alertItem.title,
+                      message: alertItem.message,
+                      dismissButton: alertItem.dismissButton)
+            }
+            
+            if viewModel.isLoading {
+                LoadingView()
+            }
         }
+        
     }
 }
 
